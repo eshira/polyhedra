@@ -42,19 +42,19 @@ polygon([[0,0],[+b,-a],[shortside/2,-a-c],[-shortside/2,-a-c],[-b,-a]]);
 }}
 
 module chamfers() {
-rotate([180-dihedral,0,-90+alpha/2]){
+rotate([(180-dihedral)/2,0,-90+alpha/2]){
 linear_extrude(center=true, height=25) {
 polygon([[-5,0],[-5,thickness],[longside+5,thickness],[longside+5,0]]);
 }}
 
-rotate([180-dihedral,0,90-alpha/2]){
+rotate([(180-dihedral)/2,0,90-alpha/2]){
 mirror([1,0,0]){
 linear_extrude(center=false, height=25) {
 polygon([[-5,0],[-5,thickness],[longside+5,thickness],[longside+5,0]]);}
 }}
 
 translate([(shortside/2),-a-c,0]){
-rotate([-180+dihedral,0,180-beta]){
+rotate([(-180+dihedral)/2,0,180-beta]){
 translate([0,-thickness,0]){
 linear_extrude(center=true, height=25) {
 polygon([[-5,0],[-5,thickness],[shortside,thickness],[shortside,0]]);
@@ -62,7 +62,7 @@ polygon([[-5,0],[-5,thickness],[shortside,thickness],[shortside,0]]);
 
 mirror([1,0,0]){
 translate([(shortside/2),-a-c,0]){
-rotate([-180+dihedral,0,180-beta]){
+rotate([(-180+dihedral)/2,0,180-beta]){
 translate([0,-thickness,0]){
 linear_extrude(center=true, height=25) {
 polygon([[-5,0],[-5,thickness],[shortside,thickness],[shortside,0]]);
@@ -70,7 +70,7 @@ polygon([[-5,0],[-5,thickness],[shortside,thickness],[shortside,0]]);
 
 
 translate([0,-a-c,0]){
-rotate([-180+dihedral,0,0]){
+rotate([(-180+dihedral)/2,0,0]){
 linear_extrude(center=true, height=25) {
 polygon([[-shortside/2,-thickness],[shortside/2,-thickness],[shortside/2,0],[-shortside/2,0]]);
 }}}
@@ -80,7 +80,7 @@ polygon([[-shortside/2,-thickness],[shortside/2,-thickness],[shortside/2,0],[-sh
 module magnets() {
 
 //MAGNETS
-rotate([90-dihedral,0,-90+alpha/2]){
+rotate([-dihedral/2,0,-90+alpha/2]){
 translate([longside/2,-thickness/2,-magnetdepth+0.2]){
 linear_extrude(center=false, height=magnetdepth+0.2) {
 circle(magnetdiam/2);
@@ -89,7 +89,7 @@ circle(magnetdiam/2);
 
 
 mirror([1,0,0]){
-rotate([90-dihedral,0,-90+alpha/2]){
+rotate([-dihedral/2,0,-90+alpha/2]){
 translate([longside/2,-thickness/2,-magnetdepth+0.2]){
 linear_extrude(center=false, height=magnetdepth+0.2) {
 circle(magnetdiam/2);
@@ -97,7 +97,7 @@ circle(magnetdiam/2);
 
 
 translate([(shortside/2),-a-c,0]){
-rotate([-180+dihedral,0,180-beta]){
+rotate([(-180+dihedral)/2,0,180-beta]){
 rotate([-90,0,0]){//90-dihedral
 translate([shortside/2,-thickness/2,-.2]){
 linear_extrude(center=false, height=magnetdepth+0.2) {
@@ -107,16 +107,16 @@ circle(magnetdiam/2);
 
 /*mirror([1,0,0]){
 translate([(shortside/2),-a-c,0]){
-rotate([-180+dihedral,0,180-beta]){
+rotate([(-180+dihedral)/2,0,180-beta]){
 rotate([-90,0,0]){//90-dihedral
 translate([shortside/2,-thickness/2,-.2]){
 linear_extrude(center=false, height=magnetdepth+0.2) {
 circle(magnetdiam/2);
 }}}
-}}}*/
+}}}*/ //this magnet removed, or replace it and remove the other for the other enantiomorph
 
 translate([0,-a-c,0]){
-rotate([-180+dihedral,0,0]){
+rotate([(-180+dihedral)/2,0,0]){
 translate([0,magnetdepth-.2,thickness/2]){
 rotate([90,0,0]){
 linear_extrude(center=false, height=magnetdepth+0.2) {
@@ -133,7 +133,6 @@ difference(){
 		chamfers();
 		magnets();}
 }
-
 
 
 
