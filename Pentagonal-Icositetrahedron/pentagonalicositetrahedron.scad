@@ -1,12 +1,7 @@
-//Pentagonal hexecontahedron with magnets
-//All "left" long sides must have the same magnet polarity
-//All "right long sides must have the same magnet polarity opposite all "left" long sides
-//All flat "bottoms" must have the same magnet polarity
-//All short sides to the left of the flat bottoms (looking into the cupped floret) must have the opposite polarity of the bottoms
-//The right short sides CAN'T have magnets!!! They all have to connect togther.
+//Pentagonal icositetrahedron with magnets
 
-//Dihedral angle: 153.1786°
-//big angle x4, 118.14°, smallangle x1 67.44°
+//Dihedral angle: 136.3092°
+//big angle (times 4), 114.812°, smallangle x1 80.7517°
 $fn=50;
 
 //to do put in my diagram
@@ -17,9 +12,9 @@ thickness = 10; //how thick our piece is
 magnetdepth = 2.5;
 magnetdiam = 6.5;
 
-dihedral = 153.1786; //the dihedral angle of our thing is fixed
-alpha = 67.44; //the small angle of the point
-beta = 118.14; //the larger angle between the other points
+dihedral = 136.3092; //the dihedral angle of our thing is fixed
+alpha = 80.7517; //the small angle of the point
+beta = 114.812; //the larger angle between the other points
 
 
 b = sin(alpha/2)*longside;
