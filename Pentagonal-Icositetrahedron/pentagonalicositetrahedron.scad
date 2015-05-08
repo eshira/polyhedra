@@ -31,6 +31,8 @@ d = thickness/tan(dihedral/2);
 e = sin(180-beta)*thickness;
 f = sqrt(thickness*thickness-e*e);
 
+excess = 15;
+
 module mainbody(){
 linear_extrude(height = thickness ) {
 polygon([[0,0],[+b,-a],[shortside/2,-a-c],[-shortside/2,-a-c],[-b,-a]]);
@@ -42,11 +44,11 @@ linear_extrude(center=true, height=25) {
 polygon([[-5,0],[-5,thickness],[longside+5,thickness],[longside+5,0]]);
 }}
 
-rotate([(180-dihedral)/2,0,90-alpha/2]){
 mirror([1,0,0]){
-linear_extrude(center=false, height=25) {
-polygon([[-5,0],[-5,thickness],[longside+5,thickness],[longside+5,0]]);}
-}}
+rotate([(180-dihedral)/2,0,-90+alpha/2]){
+linear_extrude(center=true, height=25) {
+polygon([[-5,0],[-5,thickness],[longside+5,thickness],[longside+5,0]]);
+}}}
 
 translate([(shortside/2),-a-c,0]){
 rotate([(-180+dihedral)/2,0,180-beta]){
@@ -126,7 +128,8 @@ difference(){
 	mainbody();
 		union(){
 		chamfers();
-		magnets();}
+		magnets();
+	}
 }
 
 
