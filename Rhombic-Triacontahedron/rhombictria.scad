@@ -23,19 +23,24 @@ magnetdiam = 6.5; //diameter of the magnet holes; tailor this to suit your 3d pr
 
 //Other Variables
 dihedral = 144; //the dihedral angle
-
 alpha = atan(2); //Rhombus acute angle
-beta = 360-alpha*2;
 
-difference(){
-	mainbody();
-    union() {
-        chamfers();
-        //magnets();
-    }
-}
+//Main
+tile();
+//rotate([dihedral/4,0,alpha]){tile();} //Show a second tile rotated to correct relative position
+//rotate([-dihedral/4,0,0]){ rotate([0,0,-alpha]){tile();}} //Show a third tile rotated to correct relative position
 
 //Modules
+
+module tile() {
+    difference(){
+        mainbody();
+        union(){
+            chamfers();
+            magnets();
+        }
+    }
+}
 
 module mainbody(){
 	linear_extrude(height = thickness ) {
@@ -78,4 +83,49 @@ module chamfers() {
 			}
 		}
 	}
+}
+
+module magnets() {
+    extra=.2;
+    rotate([0,0,alpha]) {
+        translate([side/2,-0.5*(thickness)*cos(dihedral/2)-magnetdepth/sin(dihedral/2),thickness/2]){
+            rotate([-dihedral/2,0,0]){
+                linear_extrude(center=false, height=magnetdepth+extra) {
+                    circle(magnetdiam/2);
+                }
+            }
+        }
+    }
+    rotate([0,0,0]) {
+        translate([side/2,0.5*thickness*cos(dihedral/2)+magnetdepth/sin(dihedral/2),thickness/2]){
+            rotate([dihedral/2,0,0]){
+                linear_extrude(center=false, height=magnetdepth+extra) {
+                    circle(magnetdiam/2);
+                }
+            }
+        }
+    }
+
+    translate([side+side*cos(alpha),side*sin(alpha),0]) {
+        rotate([0,0,180]) {
+            rotate([0,0,alpha]) {
+                translate([side/2,-0.5*(thickness)*cos(dihedral/2)-magnetdepth/sin(dihedral/2),thickness/2]){
+                    rotate([-dihedral/2,0,0]){
+                        linear_extrude(center=false, height=magnetdepth+extra) {
+                            circle(magnetdiam/2);
+                        }
+                    }
+                }
+            }
+            rotate([0,0,0]) {
+                translate([side/2,0.5*thickness*cos(dihedral/2)+magnetdepth/sin(dihedral/2),thickness/2]){
+                    rotate([dihedral/2,0,0]){
+                        linear_extrude(center=false, height=magnetdepth+extra) {
+                            circle(magnetdiam/2);
+                        }
+                    }
+                }
+            }
+        }
+    }    
 }
