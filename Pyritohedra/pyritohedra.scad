@@ -18,17 +18,17 @@ tilesize = 14;
 /*  Set the thickness variable to control the thickness of the tiles. Units are millimeters.
     If larger than the max height (computed later as variable 'ztop') this will throw off the centering of the magnet holes
 */
-thickness = 8;//24.9035;
+thickness = 8;
 
 /*  The diameter of the magnet hole. Units are millimeters. */
-magdiam = 6.5;
+magdiam = 6;
 
 /*  The depth of the magnet hole. Units are millimeters.   */
 magdepth=1.25;
 
 /*  The parameter that controls the type of shape, from 0 to 1
     Use 0.9999999999999999 instead of 1 to avoid NaN in the matrices */
-h=0.3;
+h=0.6;
 
 
 //END of user controlled variables section
@@ -38,7 +38,7 @@ h=0.3;
 
 
 
-$fn=200;
+$fn=100;
 
 function dot(v = [1,0,0], w = [0,1,0]) = v[0]*w[0]+v[1]*w[1]+v[2]*w[2]; //dot product of two vectors
 function angle(v = [1,1,1], w = [1,1,1]) = acos(dot(v,w)/(norm(v)*norm(w)));  //angle between two vectors
@@ -101,7 +101,6 @@ norm1 = cross(f1v1,f1v2); //normal vector to face1
 norm2 = cross(f2v1,f2v2); //normal vector to face2
 phi = angle(v=norm2,w=norm1); //dihedral angle #2, 'sideA-to-sideB'
 
-//pyritohedron(h); //pyritohedron solid model
 
 facepoints3d = [
                 [0,(1-pow(h,2)),0]*ry,
@@ -123,7 +122,7 @@ theta1 = (360+theta*2);    //Here I convert theta to be half of the actual dihed
 interior1 = angle(v=(facepoints3d[3]-facepoints3d[4]),w=facepoints3d[4]);
 interior2 = angle(v=(facepoints3d[3]-facepoints3d[1]),w=(facepoints3d[2]-facepoints3d[1]));
    
-module magnets() {
+module magnets(m=false) {
     angle2 = angle(v=facepoints3d[1]-facepoints3d[2],w=[0,1,0]);
     length2 = norm(facepoints3d[2]-facepoints3d[1]);
     x = tilesize*facepoints3d[2][0] - tilesize*cos(90-angle2)*length2/2;
@@ -161,35 +160,82 @@ module magnets() {
     xtop = tilesize*facepoints3d[0][0]+t*intersection1[0];
     ztop = tilesize*facepoints3d[0][2]+t*intersection1[2];
     ytop=0;
-
+    
+    //Go up until half the total height
     mag_t = 0.5*thickness/ztop;
-    //Line between base of magnet and top, mag_t portion
-    //Line between origin and the top
+    
+    //Offset the base face magnets
     yoffset = abs(tilesize*facepoints3d[0][1]/2);
-    translate([mag_t*xtop,mag_t*(ytop-yoffset)+yoffset,mag_t*ztop]) rotate([0,-theta,0]) translate([0,0,-1]) cylinder(d=magdiam,h=magdepth+1);
-    translate([mag_t*xtop,mag_t*(ytop+yoffset)-yoffset,mag_t*ztop]) rotate([0,-theta,0]) translate([0,0,-1]) cylinder(d=magdiam,h=magdepth+1);
-    //MAGNET HOLES
+    
+    if (m){
+        //MAGNET HOLES
+        if ( abs(mag_t*(ytop-yoffset*2)+yoffset*2) > 1.1*magdiam) {
+            translate([mag_t*xtop,mag_t*(ytop-yoffset)+yoffset,mag_t*ztop]) rotate([0,-theta,0]) translate([0,0,-1]) cylinder(d=magdiam,h=magdepth+1);
+            translate([mag_t*xtop,mag_t*(ytop+yoffset)-yoffset,mag_t*ztop]) rotate([0,-theta,0]) translate([0,0,-1]) cylinder(d=magdiam,h=magdepth+1);
+        }
 
-    translate([mag_t*(xtop-x)+x,mag_t*(ytop-y)+y,mag_t*ztop]) rotate([0,phi/2,angle(v=facepoints3d[1]-facepoints3d[2],w=[0,1,0])]) translate([0,0,-magdepth]) cylinder(d=magdiam,h=magdepth+1);
+        translate([mag_t*(xtop-x)+x,mag_t*(ytop-y)+y,mag_t*ztop]) rotate([0,phi/2,angle(v=facepoints3d[1]-facepoints3d[2],w=[0,1,0])]) translate([0,0,-magdepth]) cylinder(d=magdiam,h=magdepth+1);
 
-    mirror([0,01,0]) translate([mag_t*(xtop-x)+x,mag_t*(ytop-y)+y,mag_t*ztop]) rotate([0,phi/2,angle(v=facepoints3d[1]-facepoints3d[2],w=[0,1,0])]) translate([0,0,-magdepth]) cylinder(d=magdiam,h=magdepth+1);
+        mirror([0,01,0]) translate([mag_t*(xtop-x)+x,mag_t*(ytop-y)+y,mag_t*ztop]) rotate([0,phi/2,angle(v=facepoints3d[1]-facepoints3d[2],w=[0,1,0])]) translate([0,0,-magdepth]) cylinder(d=magdiam,h=magdepth+1);
 
-    translate ([mag_t*(xtop-x1)+x1,mag_t*(ytop-y1)+y1,mag_t*ztop]) rotate([0,phi/2,angle(v=facepoints3d[0]-facepoints3d[1],w=[0,1,0])]) translate([0,0,-magdepth]) cylinder(d=magdiam,h=magdepth+1);
-    mirror([0,1,0]) translate ([mag_t*(xtop-x1)+x1,mag_t*(ytop-y1)+y1,mag_t*ztop]) rotate([0,phi/2,angle(v=facepoints3d[0]-facepoints3d[1],w=[0,1,0])]) translate([0,0,-magdepth]) cylinder(d=magdiam,h=magdepth+1);
+        translate ([mag_t*(xtop-x1)+x1,mag_t*(ytop-y1)+y1,mag_t*ztop]) rotate([0,phi/2,angle(v=facepoints3d[0]-facepoints3d[1],w=[0,1,0])]) translate([0,0,-magdepth]) cylinder(d=magdiam,h=magdepth+1);
+        mirror([0,1,0]) translate ([mag_t*(xtop-x1)+x1,mag_t*(ytop-y1)+y1,mag_t*ztop]) rotate([0,phi/2,angle(v=facepoints3d[0]-facepoints3d[1],w=[0,1,0])]) translate([0,0,-magdepth]) cylinder(d=magdiam,h=magdepth+1);
+    }
 }
 
-difference(){
-    //WALLS
-    linear_extrude(height=thickness,center=false){
-        scale([tilesize,tilesize,tilesize]){
-            polygon(points = facepoints);
+module tile(m=false){
+    difference(){
+        //Tile
+        linear_extrude(height=thickness,center=false){
+            scale([tilesize,tilesize,tilesize]){
+                polygon(points = facepoints);
+            }
+        }
+        //Walls
+        rotate([0,90-abs(theta1)/2,0]) translate([-tilesize,-tilesize,0]) cube([tilesize,2*tilesize,2*tilesize]);
+        translate(facepoints[4]*tilesize) rotate([0,0,interior1]) rotate([0,90-phi/2,0]) translate([-tilesize,-1.75*tilesize,0]) cube([tilesize,2*tilesize,2*tilesize]);
+        mirror([0,1,0]) translate(facepoints[4]*tilesize) rotate([0,0,interior1]) rotate([0,90-phi/2,0]) translate([-tilesize,-1.75*tilesize,0]) cube([tilesize,2*tilesize,2*tilesize]);
+        translate([tilesize*facepoints[2][0],0,0]) rotate([0,0,interior2]) translate([0,-tilesize/6,0]) rotate([0,-90+0.5*phi,0]) cube([tilesize,2*tilesize,2*tilesize]);
+        mirror([0,1,0]) translate([tilesize*facepoints[2][0],0,0]) rotate([0,0,interior2]) translate([0,-tilesize/6,0]) rotate([0,-90+0.5*phi,0]) cube([tilesize,2*tilesize,2*tilesize]);
+        magnets(m);
+    }
+}
+
+
+module assembly(){
+    rotate([0,-(180-theta1)/2,0]){
+        tile(m=false);
+        rotate([0,(180-theta1)/2,0]) translate([0,tilesize*facepoints3d[0][1]]) rotate([theta1/2,0,0])translate([0,tilesize*facepoints3d[2][0],0]) rotate([0,0,-90]) tile(m=false);
+        rotate([0,180-theta1,0]) mirror([1,0,0]) tile(m=false);
+        mirror([0,1,0]) rotate([0,(180-theta1)/2,0]) translate([0,tilesize*facepoints3d[0][1]]) rotate([theta1/2,0,0])translate([0,tilesize*facepoints3d[2][0],0]) rotate([0,0,-90]) tile(m=false);
+    }
+    translate([0,0,cos((180-theta1)/2)*2*tilesize*facepoints3d[2][0]]) { 
+        mirror([0,0,1]){
+            rotate([0,-(180-theta1)/2,0]){
+                tile(m=false);
+                rotate([0,(180-theta1)/2,0]) translate([0,tilesize*facepoints3d[0][1]]) rotate([theta1/2,0,0])translate([0,tilesize*facepoints3d[2][0],0]) rotate([0,0,-90]) tile(m=false);
+                rotate([0,180-theta1,0]) mirror([1,0,0]) tile(m=false);
+                mirror([0,1,0]) rotate([0,(180-theta1)/2,0]) translate([0,tilesize*facepoints3d[0][1]]) rotate([theta1/2,0,0])translate([0,tilesize*facepoints3d[2][0],0]) rotate([0,0,-90]) tile(m=false);
+            }
+      }
+    }
+    translate([-cos((180-theta1)/2)*tilesize*facepoints3d[2][0],0,sin((180-theta1)/2)*tilesize*facepoints3d[2][0]+tilesize*facepoints3d[0][1]]){
+        rotate([90,0,90]){
+            rotate([0,-(180-theta1)/2,0]) tile(m=false);
+            mirror([1,0,0])  rotate([0,-(180-theta1)/2,0]) tile(m=false);
         }
     }
-    rotate([0,90-abs(theta1)/2,0]) translate([-tilesize,-tilesize,0]) cube([tilesize,2*tilesize,2*tilesize]);
-    translate(facepoints[4]*tilesize) rotate([0,0,interior1]) rotate([0,90-phi/2,0]) translate([-tilesize,-1.75*tilesize,0]) cube([tilesize,2*tilesize,2*tilesize]);
-    mirror([0,1,0]) translate(facepoints[4]*tilesize) rotate([0,0,interior1]) rotate([0,90-phi/2,0]) translate([-tilesize,-1.75*tilesize,0]) cube([tilesize,2*tilesize,2*tilesize]);
-    translate([tilesize*facepoints[2][0],0,0]) rotate([0,0,interior2]) translate([0,-tilesize/6,0]) rotate([0,-90+0.5*phi,0]) cube([tilesize,2*tilesize,2*tilesize]);
-    mirror([0,1,0]) translate([tilesize*facepoints[2][0],0,0]) rotate([0,0,interior2]) translate([0,-tilesize/6,0]) rotate([0,-90+0.5*phi,0]) cube([tilesize,2*tilesize,2*tilesize]);
-    magnets();
+    mirror([1,0,0]){
+        translate([-cos((180-theta1)/2)*tilesize*facepoints3d[2][0],0,sin((180-theta1)/2)*tilesize*facepoints3d[2][0]+tilesize*facepoints3d[0][1]]){
+            rotate([90,0,90]){
+                rotate([0,-(180-theta1)/2,0]) tile(m=false);
+                mirror([1,0,0])  rotate([0,-(180-theta1)/2,0]) tile(m=false);
+            }
+        }
+    }
 }
 
+//add up theta1 twice and then the angle you fixed twice and see if you get 360
+tile(m=true); //generate a single tile with magnet holes;
+//pyritohedron(h); //pyritohedron solid model
+//assembly(); // An assembly of all the tiles, sans magnet holess
