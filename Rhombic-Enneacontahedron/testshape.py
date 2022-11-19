@@ -4,6 +4,12 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pyny3d.geoms as pyny
 
+# There is a remaining degree of freedom in the truncation step
+# this number must be greater than 2
+# if it gets very large, it begins to resemble a rhombic triacontahedron
+# To get evenly spaced truncation, set this to 3 (to divide the edge into equal portions)
+ALONG_EDGE = 3
+
 def icopoints(phi=(math.sqrt(5)-1)/2):
 	#define the points for an icosahedron
 	vertices = [[0,1,phi],[0,1,-phi],[0,-1,phi],[0,-1,-phi],[1,phi,0],[1,-phi,0],[-1,phi,0],[-1,-phi,0],[phi,0,1],[-phi,0,1],[phi,0,-1],[-phi,0,-1]]
@@ -62,7 +68,7 @@ def truncate():
 					thispoint = np.array([points[p][0],points[p][1],points[p][2]])
 				else:
 					thatpoint = np.array([points[p][0],points[p][1],points[p][2]])
-			newpoints.append(thispoint-(thispoint-thatpoint)/3)
+			newpoints.append(thispoint-(thispoint-thatpoint)/ALONG_EDGE)
 	return newpoints
 
 newpoints = truncate() # the points of tI, the truncated icosahedron
@@ -229,12 +235,12 @@ for i in np.arange(0,len(newpoints),5): # for each pentagon
 		#print(p1,p2,p3,p4)
 		newrhombi2.append(pyny.Polygon(np.array([p1,p2,p4,p3])))		
 		#toplot.append(p1)
-"""
+
 #find an adjacent broad and slim rhombus
 red = [newpoints[4],raisedpoints[11],newpoints[6],raisedpoints[10]]
 blue = [newpoints[6],raisedpoints2[6],newpoints[5],raisedpoints[10]]
-for pt in red+blue:
-	toplot.append(pt)
+#for pt in red+blue:
+#	toplot.append(pt)
 fnorm = []
 #compute red's face normal
 for rhombus in [red,blue]:
@@ -250,56 +256,63 @@ for rhombus in [red,blue]:
 	fnorm.append(facenorm)
 	arrows.append(np.concatenate([sum(red)/4,5*facenorm]))	
 rednorm,bluenorm = fnorm
-dihedral = np.arccos((np.dot(rednorm,bluenorm))/(np.dot(np.linalg.norm(rednorm),np.linalg.norm(bluenorm))))
-print("Dihedral angle between red and blue faces:")
-print(180-np.rad2deg(dihedral))
-"""
+dihedral2 = np.arccos((np.dot(rednorm,bluenorm))/(np.dot(np.linalg.norm(rednorm),np.linalg.norm(bluenorm))))
 
-"""
 #find two adjacent blue rhombi
 blue1 = [raisedpoints[18],newpoints[9],newpoints[5],raisedpoints2[6]]
 blue2 = [newpoints[6],raisedpoints2[6],newpoints[5],raisedpoints[10]]
-for pt in blue1+blue2:
-	toplot.append(pt)
+#for pt in blue1+blue2:
+#	toplot.append(pt)
 
 fnorm = []
 #compute face normal
 for rhombus in [blue1,blue2]:
 	facepoint1 = sum(rhombus)/4
-	toplot.append(facepoint1)
+	#toplot.append(facepoint1)
 	vec1 = rhombus[0]-rhombus[1]
 	vec2 = rhombus[0]-rhombus[2]
 	# face normal as cross of two noncolinear face vectors
 	facenorm = np.cross(vec2,vec1)	
 	if(np.linalg.norm(facepoint1+facenorm) < np.linalg.norm(facepoint1-facenorm)):
 		facenorm = np.cross(vec1,vec2)
-	arrows.append(np.concatenate([facepoint1,5*facenorm]))
+	#arrows.append(np.concatenate([facepoint1,5*facenorm]))
 	fnorm.append(facenorm)
 	#arrows.append(np.concatenate([sum(blue1)/4,5*facenorm]))	
 blue1norm,blue2norm = fnorm
 dihedral = np.arccos((np.dot(blue1norm,blue2norm))/(np.dot(np.linalg.norm(blue1norm),np.linalg.norm(blue2norm))))
-print("Dihedral angle between blue faces:")
-print(180-np.rad2deg(dihedral))
-"""
-
 
 #find a red rhombus
 red = [newpoints[4],raisedpoints[11],newpoints[6],raisedpoints[10]]
 vec1 = red[1]-red[2]
 vec2 = red[3]-red[2]
-#angle = np.arccos((np.dot(vec1,vec2))/(np.dot(np.linalg.norm(vec1),np.linalg.norm(vec2))))
+angle = np.arccos((np.dot(vec1,vec2))/(np.dot(np.linalg.norm(vec1),np.linalg.norm(vec2))))
+red_interior1 = 180-np.rad2deg(angle)
+#red_interior2 = np.rad2deg(angle)
 
 #find a blue rhombus
 blue = [newpoints[6],raisedpoints2[6],newpoints[5],raisedpoints[10]]
-vec1 = blue[0]-blue[3]
-vec2 = blue[1]-blue[0]
 
-#arrows.append(np.concatenate([blue[3],blue[0]-blue[3]]))
-arrows.append(np.concatenate([blue[0],blue[1]-blue[0]]))
+vec1 = blue[3]-blue[2]
+vec2 = blue[1]-blue[2]
+angle = np.arccos((np.dot(vec1,vec2))/(np.dot(np.linalg.norm(vec1),np.linalg.norm(vec2))))
+obtuse = np.rad2deg(angle)
 
-print("distance for blue faces:")
-print(np.linalg.norm(vec2))
+#arrows.append(np.concatenate([blue[3],blue[2]-blue[3]]))
+#arrows.append(np.concatenate([blue[1],blue[2]-blue[1]]))
 
+vec3 = blue[0]-blue[1]
+vec4 = blue[2]-blue[1]
+angle = np.arccos((np.dot(vec3,vec4))/(np.dot(np.linalg.norm(vec3),np.linalg.norm(vec4))))
+blue_interior1a = np.rad2deg(angle);
+
+vec5 = blue[0]-blue[3]
+vec6 = blue[2]-blue[3]
+angle = np.arccos((np.dot(vec5,vec6))/(np.dot(np.linalg.norm(vec5),np.linalg.norm(vec6))))
+blue_interior1b = np.rad2deg(angle)
+
+vecS = blue[1]-blue[0]
+vecL = blue[3]-blue[0]
+sidefactor = np.linalg.norm(vecS)/np.linalg.norm(vecL);
 
 #polyhedron = pyny.Polyhedron(pentagons+hexagons+newrhombi)
 polyhedron = pyny.Polyhedron(newrhombi2)
@@ -324,6 +337,13 @@ try:
 except Exception as e:
 	print(e)
 
+print("Put into OpenSCAD")
+print("dihedral2=",180-np.rad2deg(dihedral2),";")
+print("dihedral=",180-np.rad2deg(dihedral),";")
+print("alpha=",red_interior1,";")
+print("beta=",blue_interior1a,";")
+print("blue1b=",blue_interior1b,";")
+print("obtuse=",obtuse,";")
+print("sidefactor=",sidefactor,";")
 
 plt.show()
-
