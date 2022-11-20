@@ -1,5 +1,5 @@
 /*
-	Rhombic Enneacontahedron with magnets, tile A
+	Rhombic Enneacontahedron with magnets
     by eshira
 */
 
@@ -12,13 +12,13 @@ magnetdepth = 2.25; //depth of the magnet holes; tailor this to suit your 3d pri
 magnetdiam = 4.45; //diameter of the magnet holes; tailor this to suit your 3d printer
 
 //Other Variables - Get from python script
-dihedral2= 161.0021166134344 ;
-dihedral= 156.37057122706983 ;
-alpha= 77.94689467373131 ;
-beta= 68.51275396217996 ;
-blue1b= 36.65885970094695 ;
-obtuse= 127.41419316843655 ;
-sidefactor= 0.5586814777741947 ;
+dihedral2= 159.4455573432933 ;
+dihedral= 160.81186354627906 ;
+alpha= 56.67993474152847 ;
+beta= 69.73165195317623 ;
+blue1b= 56.679934741528456 ;
+obtuse= 116.79420665264766 ;
+sidefactor= 0.830397632781982 ;
 
 short = side*sidefactor;
 phi=90-(beta/2);
@@ -59,6 +59,12 @@ module tile_B(){
     tile();}
 
 module tile_A(){
+tile_A_half();
+translate([0,-2*side*cos(alpha/2),0]) mirror([0,1,0]) tile_A_half();    
+}
+module tile_A_half(){
+    difference()
+{
 difference(){
 rotate([0,-(180-dihedral2),alpha/2]) union(){
 rotate([0,0,blue1b])    mirror([1,0,0]) test2();
@@ -73,8 +79,10 @@ test1();
 }
 }
 }
-}
 
+translate([-side*1.5,-side*3-side*cos(alpha/2),-1.5*thickness])    cube([side*3,side*3,thickness*3]);
+}
+}
 module test1(){
     union(){
 //translate([short*sin(180-obtuse),-side-short*cos(180-obtuse),0])  //rotate([0,0,90-obtuse])  mirror([1,0,0]) tile();
