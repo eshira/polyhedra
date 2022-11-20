@@ -47,7 +47,7 @@ Finally, choose what to render. Choose ```tile_A()``` to generate a "red" tile (
 
 <img src="/Rhombic-Enneacontahedron/tilesAandB.png" width="600">
 
-Or choose ```unit()``` to generate an assembly of both (note it doesn't fold up perfectly--there's a small error from an angle I estimated instead of calculated). Note in the image below, for an ```ALONG_EDGE=4``` parameter and a very thick tile, the need to "bevel" the point where the three A tiles meet becomes more obvious.
+Or choose ```unit()``` to generate an assembly of both (note it doesn't fold up perfectly--there's a small error from an angle I estimated instead of calculated). Note in the image below, for an ```ALONG_EDGE=4``` parameter and a very thick tile, the need to "bevel" the point where the three A tiles meet becomes more obvious. This bevel is needed for tiles where ```ALONG_EDGE```>3
 
 <img src="/Rhombic-Enneacontahedron/assembly.png" width="600">
 
