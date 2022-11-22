@@ -7,18 +7,18 @@ $fn=50;
 
 //User Defined Variables
 side = 30; //side length, these match to red side length
-thickness = 8;//46.0851; //how thick (z dimension) the tile is
+thickness = 20;//46.0851; //how thick (z dimension) the tile is
 magnetdepth = 2.25; //depth of the magnet holes; tailor this to suit your 3d printer
-magnetdiam = 4.45; //diameter of the magnet holes; tailor this to suit your 3d printer
+magnetdiam = 4; //diameter of the magnet holes; tailor this to suit your 3d printer
 
 //Other Variables - Get from python script
-dihedral2= 159.4455573432933 ;
-dihedral= 160.81186354627906 ;
-alpha= 56.67993474152847 ;
-beta= 69.73165195317623 ;
-blue1b= 56.679934741528456 ;
-obtuse= 116.79420665264766 ;
-sidefactor= 0.830397632781982 ;
+dihedral2= 161.0021166134344 ;
+dihedral= 156.37057122706983 ;
+alpha= 77.94689467373131 ;
+beta= 68.51275396217996 ;
+blue1b= 36.65885970094695 ;
+obtuse= 127.41419316843655 ;
+sidefactor= 0.5586814777741947 ;
 
 short = side*sidefactor;
 phi=90-(beta/2);
@@ -30,38 +30,39 @@ ldiag =  l1+l2;
 
 /*--------Choose what to render here----------*/
 //tile_B is a BLUE tile (the ones that meet in 5s forming a star)
-tile_B();
+//tile_B();
 
 //tile_A is a red tile. These shared edges with only blue tiles (never themselves)
-tile_A();
+//tile_A();
 
 //Unit shows an assembly of three blue tiles and three red tiles
 //(note I still have one angle to calculate to make it fold up right)
-//unit(); 
+unit(); 
 
 
 /*--------------------------------------*/
 
 module unit(){
-mirror([1,0,0]) rotate([0,-(180-dihedral2),alpha/2]) { translate([short*sin(180-obtuse),-side-short*cos(180-obtuse),0]) rotate([0,0,90-obtuse])  mirror([1,0,0]) tile();
-rotate([180-dihedral2,0,-90+blue1b])  tileA();}
+mirror([1,0,0]) rotate([0,-(180-dihedral2),alpha/2]) { translate([short*sin(180-obtuse),-side-short*cos(180-obtuse),0]) rotate([0,0,90-obtuse])  mirror([1,0,0]) tile_B();
+rotate([180-dihedral2,0,-90+blue1b])  tile_A();}
 
-rotate([0,-(180-dihedral2),alpha/2]){ translate([short*sin(180-obtuse),-side-short*cos(180-obtuse),0]) rotate([0,0,90-obtuse])  mirror([1,0,0]) tile();
-rotate([180-dihedral2,0,-90+blue1b])  tileA();}
-tile_A();
+rotate([0,-(180-dihedral2),alpha/2]){ translate([short*sin(180-obtuse),-side-short*cos(180-obtuse),0]) rotate([0,0,90-obtuse])  mirror([1,0,0]) tile_B();
+rotate([180-dihedral2,0,-90+blue1b])  tile_A();}
+rotate([0,0,-90-alpha/2]) tile_A();
 
 
 //figure out this "38" later
-rotate([38,0,0]) rotate([0,0,180-blue1b/2]) translate([short*sin(180-obtuse),-side-short*cos(180-obtuse),0]) rotate([0,0,90-obtuse])  mirror([1,0,0]) tile();
+rotate([38,0,0]) rotate([0,0,180-blue1b/2]) translate([short*sin(180-obtuse),-side-short*cos(180-obtuse),0]) rotate([0,0,90-obtuse])  mirror([1,0,0]) tile_B();
 }
 
 module tile_B(){
     tile();}
 
 module tile_A(){
+rotate([0,0,90+alpha/2]){
 tile_A_half();
 translate([0,-2*side*cos(alpha/2),0]) mirror([0,1,0]) tile_A_half();    
-}
+}}
 module tile_A_half(){
     difference()
 {
